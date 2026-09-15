@@ -29,6 +29,12 @@ def load_faqs(filepath: str = "faq_data.json") -> list:
     Returns:
         list: List of dictionaries with 'question' and 'answer' keys.
     """
+    if not os.path.isabs(filepath) and not os.path.exists(filepath):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        alt_path = os.path.join(base_dir, filepath)
+        if os.path.exists(alt_path):
+            filepath = alt_path
+
     if not os.path.exists(filepath):
         return []
 

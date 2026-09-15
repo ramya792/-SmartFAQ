@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFAQ - Your College Information Assistant</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    /* Main Container */
+    .app-container {
+      width: 100%;
+      max-width: 768px;
+      height: 90vh;
+      max-height: 840px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .chat-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .robot-icon {
+      width: 42px;
+      height: 42px;
+      background: #2563eb;
+      color: #ffffff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 0.825rem;
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #16a34a;
+      background: #f0fdf4;
+      padding: 0.3rem 0.65rem;
+      border-radius: 20px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #16a34a;
+      border-radius: 50%;
+    }
+
+    /* Chat Scroll Area */
+    .chat-body {
+      flex: 1;
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: #f8fafc;
+    }
+
+    /* Messages */
+    .message-row {
+      display: flex;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.bot {
+      justify-content: flex-start;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .avatar.bot-avatar {
+      background: #2563eb;
+      color: white;
+    }
+
+    .message-bubble {
+      max-width: 80%;
+      padding: 0.85rem 1.1rem;
+      border-radius: 12px;
+      font-size: 0.925rem;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message-row.user .message-bubble {
+      background: #2563eb;
+      color: #ffffff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message-row.bot .message-bubble {
+      background: #ffffff;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+      border-bottom-left-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+    }
+
+    .welcome-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-card p {
+      font-size: 0.875rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    /* Suggested Questions Section */
+    .suggested-section {
+      margin-top: 0.75rem;
+    }
+
+    .suggested-title {
+      font-size: 0.775rem;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .suggested-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .suggested-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.825rem;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      text-align: left;
+    }
+
+    .suggested-btn:hover {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #1d4ed8;
+    }
+
+    /* Loading dots animation */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 0;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out both;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Input Footer */
+    .chat-footer {
+      padding: 1rem 1.5rem;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 0.4rem 0.5rem 0.4rem 1rem;
+      transition: border-color 0.15s ease-in-out;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: #2563eb;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .question-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.925rem;
+      font-family: inherit;
+      color: #1e293b;
+    }
+
+    .question-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .send-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease-in-out;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .send-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .send-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+      body {
+        padding: 0;
+      }
+      .app-container {
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: none;
+      }
+      .chat-header, .chat-footer {
+        padding: 0.85rem 1rem;
+      }
+      .chat-body {
+        padding: 1rem;
+      }
+      .message-bubble {
+        max-width: 88%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="chat-header">
+      <div class="header-left">
+        <div class="robot-icon">🤖</div>
+        <div class="header-info">
+          <h1 class="header-title">SmartFAQ</h1>
+          <span class="header-subtitle">Your College Information Assistant</span>
+        </div>
+      </div>
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        Online
+      </div>
+    </header>
+
+    <!-- Chat Area -->
+    <main class="chat-body" id="chatBody">
+      <!-- Welcome Banner -->
+      <div class="welcome-card" id="welcomeCard">
+        <h3>Welcome to SmartFAQ! 👋</h3>
+        <p>
+          I am here to assist you with college inquiries. You can ask me about admissions, courses, fees, exams, hostel, library, internships, and placements.
+        </p>
+        
+        <div class="suggested-section">
+          <div class="suggested-title">Suggested Questions</div>
+          <div class="suggested-grid">
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('How can I apply for admission?')">How can I apply for admission?</button>
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('What courses are offered?')">What courses are offered?</button>
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('Are scholarships available?')">Are scholarships available?</button>
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('Does the college provide hostel facilities?')">Does the college provide hostel facilities?</button>
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('What are the library timings?')">What are the library timings?</button>
+            <button class="suggested-btn" onclick="sendSuggestedQuestion('Does the college provide placement assistance?')">Does the college provide placement assistance?</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer / Input Box -->
+    <footer class="chat-footer">
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          id="questionInput" 
+          class="question-input" 
+          placeholder="Ask a question about admissions, courses, fees, exams..."
+          autocomplete="off" 
+        />
+        <button id="sendBtn" class="send-btn" onclick="handleSend()">
+          <span>Send</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const chatBody = document.getElementById('chatBody');
+    const questionInput = document.getElementById('questionInput');
+    const sendBtn = document.getElementById('sendBtn');
+    let isProcessing = false;
+
+    // Send question on Enter key
+    questionInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+
+    function sendSuggestedQuestion(questionText) {
+      if (isProcessing) return;
+      questionInput.value = questionText;
+      handleSend();
+    }
+
+    async function handleSend() {
+      const question = questionInput.value.trim();
+      if (!question || isProcessing) return;
+
+      // 1. Display User Message
+      appendMessage('user', question);
+      questionInput.value = '';
+      setLoadingState(true);
+
+      // 2. Show Bot Typing Indicator
+      const loadingBubble = appendTypingIndicator();
+
+      try {
+        // 3. Send request to API endpoint
+        const response = await fetch('/api/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ question: question })
+        });
+
+        // Remove indicator
+        if (loadingBubble && loadingBubble.parentNode) {
+          loadingBubble.parentNode.removeChild(loadingBubble);
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          appendMessage('bot', data.answer || "Sorry, I could not find a suitable answer.");
+        } else {
+          appendMessage('bot', "Sorry, I could not find a suitable answer to your question. Please try asking in a different way or contact the college office for more information.");
+        }
+      } catch (error) {
+        console.error("API Error:", error);
+        if (loadingBubble && loadingBubble.parentNode) {
+          loadingBubble.parentNode.removeChild(loadingBubble);
+        }
+        appendMessage('bot', "Sorry, I could not find a suitable answer to your question. Please try asking in a different way or contact the college office for more information.");
+      } finally {
+        setLoadingState(false);
+        questionInput.focus();
+      }
+    }
+
+    function appendMessage(sender, text) {
+      const row = document.createElement('div');
+      row.className = `message-row ${sender}`;
+
+      if (sender === 'bot') {
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar bot-avatar';
+        avatar.innerText = '🤖';
+        row.appendChild(avatar);
+      }
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.innerText = text;
+      row.appendChild(bubble);
+
+      chatBody.appendChild(row);
+      scrollToBottom();
+      return row;
+    }
+
+    function appendTypingIndicator() {
+      const row = document.createElement('div');
+      row.className = 'message-row bot';
+
+      const avatar = document.createElement('div');
+      avatar.className = 'avatar bot-avatar';
+      avatar.innerText = '🤖';
+      row.appendChild(avatar);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.innerHTML = `
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      `;
+      row.appendChild(bubble);
+
+      chatBody.appendChild(row);
+      scrollToBottom();
+      return row;
+    }
+
+    function setLoadingState(loading) {
+      isProcessing = loading;
+      sendBtn.disabled = loading;
+      questionInput.disabled = loading;
+    }
+
+    function scrollToBottom() {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  </script>
+</body>
+</html>

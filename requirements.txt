@@ -1,6 +1,5 @@
-streamlit
-nltk
+fastapi
 scikit-learn
-SpeechRecognition
-gTTS
-streamlit-mic-recorder
+nltk
+numpy
+uvicorn

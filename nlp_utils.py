@@ -5,6 +5,7 @@ Handles NLTK resource management and text preprocessing: lowercasing,
 punctuation removal, tokenization, stopword removal, and lemmatization.
 """
 
+import os
 import string
 
 try:
@@ -21,16 +22,28 @@ NLTK_RESOURCES = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
 def ensure_nltk_resources():
     """
     Automatically download required NLTK datasets quietly if they are missing.
-    Prevents runtime crashes on machines where NLTK data isn't pre-downloaded.
+    Uses /tmp/nltk_data for writable storage on serverless platforms like Vercel.
     """
     if not NLTK_AVAILABLE:
         return
+
+    # Use /tmp/nltk_data for serverless environments (e.g. Vercel)
+    nltk_data_dir = os.path.join("/tmp", "nltk_data")
+    try:
+        os.makedirs(nltk_data_dir, exist_ok=True)
+        if nltk_data_dir not in nltk.data.path:
+            nltk.data.path.append(nltk_data_dir)
+    except Exception:
+        pass
+
     for resource in NLTK_RESOURCES:
         try:
-            nltk.download(resource, quiet=True)
+            nltk.download(resource, download_dir=nltk_data_dir, quiet=True)
         except Exception:
-            # Fallback quietly if network download is blocked or unavailable
-            pass
+            try:
+                nltk.download(resource, quiet=True)
+            except Exception:
+                pass
 
 
 # Run download check upon module import
@@ -68,32 +81,23 @@ def preprocess_text(text: str) -> str:
     Returns:
         str: Space-separated string of processed tokens.
     """
-    # 1. Handle empty or non-string input safely
     if not text or not isinstance(text, str):
         return ""
 
-    # 2. Convert text to lowercase
     text = text.lower()
-
-    # 3. Remove punctuation using translation table
     text = text.translate(str.maketrans("", "", string.punctuation))
 
-    # 4. Tokenize text into words
     try:
         from nltk.tokenize import word_tokenize
-
         tokens = word_tokenize(text)
     except Exception:
-        # Fallback to simple whitespace splitting if NLTK tokenizer is unavailable
         tokens = text.split()
 
-    # 5. Remove English stopwords & non-alphanumeric tokens
     filtered_tokens = []
     for token in tokens:
         if token and token not in ENGLISH_STOPWORDS and token.isalnum():
             filtered_tokens.append(token)
 
-    # 6. Apply lemmatization to reduce words to their root forms
     if LEMMATIZER:
         lemmatized_tokens = []
         for token in filtered_tokens:
@@ -103,5 +107,5 @@ def preprocess_text(text: str) -> str:
                 lemmatized_tokens.append(token)
         filtered_tokens = lemmatized_tokens
 
-    # Return space-separated clean string
     return " ".join(filtered_tokens)
+
