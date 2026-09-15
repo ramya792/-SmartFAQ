@@ -49,6 +49,7 @@ class QuestionResponse(BaseModel):
 
 
 @app.get("/api")
+@app.get("/")
 def get_status():
     """Health check / status endpoint."""
     return {
@@ -59,6 +60,7 @@ def get_status():
 
 
 @app.post("/api/ask", response_model=QuestionResponse)
+@app.post("/ask", response_model=QuestionResponse)
 def ask_question(request: QuestionRequest):
     """
     Process a user's question and return the best matching FAQ answer.
